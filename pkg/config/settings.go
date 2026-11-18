@@ -203,16 +203,24 @@ var keyValidators = map[string]configValidator{
 		if err != nil {
 			return false
 		}
-		return intVal >= -1
+		return intVal >= -2
 	},
 	"local.retention.ms": func(v string) bool {
 		intVal, err := strconv.ParseInt(v, 10, 64)
 		if err != nil {
 			return false
 		}
-		return intVal >= -1
+		return intVal >= -2
 	},
 	"remote.storage.enable": func(v string) bool {
+		_, err := strconv.ParseBool(v)
+		return err == nil
+	},
+	"remote.log.copy.disable": func(v string) bool {
+		_, err := strconv.ParseBool(v)
+		return err == nil
+	},
+	"remote.log.delete.on.disable": func(v string) bool {
 		_, err := strconv.ParseBool(v)
 		return err == nil
 	},

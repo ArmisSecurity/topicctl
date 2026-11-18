@@ -41,13 +41,45 @@ func TestValidateSettings(t *testing.T) {
 		{
 			description: "string types",
 			settings: TopicSettings{
-				"cleanup.policy":                          "compact,delete",
-				"retention.ms":                            "1234",
-				"min.cleanable.dirty.ratio":               "0.54",
-				"preallocate":                             "true",
+				"cleanup.policy":            "compact,delete",
+				"retention.ms":              "1234",
+				"min.cleanable.dirty.ratio": "0.54",
+				"preallocate":               "true",
 				"follower.replication.throttled.replicas": "1:3,4:5,6:7",
 			},
 			expError: false,
+		},
+		{
+			description: "tiered storage read-only rollback",
+			settings: TopicSettings{
+				"remote.storage.enable":        true,
+				"remote.log.copy.disable":      "true",
+				"remote.log.delete.on.disable": false,
+				"local.retention.ms":           "-2",
+				"local.retention.bytes":        -2,
+			},
+			expError: false,
+		},
+		{
+			description: "local retention below -2",
+			settings: TopicSettings{
+				"local.retention.ms": "-3",
+			},
+			expError: true,
+		},
+		{
+			description: "retention.ms still rejects -2",
+			settings: TopicSettings{
+				"retention.ms": "-2",
+			},
+			expError: true,
+		},
+		{
+			description: "invalid remote.log.copy.disable",
+			settings: TopicSettings{
+				"remote.log.copy.disable": "maybe",
+			},
+			expError: true,
 		},
 		{
 			description: "empty values",
